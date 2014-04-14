@@ -1,5 +1,10 @@
 Revision history for Perl module CPAN::Releases::Latest
 
+0.02 2014-04-14
+    - Split _build_cached_index() into two separate private methods,
+      one for getting the info from MetaCPAN, and the other for building
+      the cached index.
+
 0.01 2014-04-12
     - First release to CPAN
 

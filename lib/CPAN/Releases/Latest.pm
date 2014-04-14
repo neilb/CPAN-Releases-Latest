@@ -53,8 +53,15 @@ sub BUILD
 
 sub _build_cached_index
 {
-    my $self = shift;
+    my $self     = shift;
+    my $distdata = $self->_get_release_info_from_metacpan();
 
+    $self->_write_cache_file($distdata);
+}
+
+sub _get_release_info_from_metacpan
+{
+    my $self       = shift;
     my $client     = MetaCPAN::Client->new();
     my $query      = {
                         either => [
@@ -78,7 +85,6 @@ sub _build_cached_index
                          released  => {},
                          developer => {},
                      };
-    my %seen;
 
     while (my $result = $scroller->next) {
         my $release  = $result->{fields};
@@ -93,13 +99,24 @@ sub _build_cached_index
 
         next unless !exists($slice->{ $distname })
                  || $release->{stat}->{mtime} > $slice->{$distname}->{time};
-        $seen{ $distname }++;
         $slice->{ $distname } = {
                                     path => $path,
                                     time => $release->{stat}->{mtime},
                                     size => $release->{stat}->{size},
                                 };
     }
+
+    return $distdata;
+}
+
+sub _write_cache_file
+{
+    my $self     = shift;
+    my $distdata = shift;
+    my %seen;
+
+    $seen{$_} = 1 for keys(%{ $distdata->{released} });
+    $seen{$_} = 1 for keys(%{ $distdata->{developer} });
 
     open(my $fh, '>', $self->cache_path);
     print $fh "#FORMAT: $FORMAT_REVISION\n";
