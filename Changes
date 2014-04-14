@@ -5,6 +5,7 @@ Revision history for Perl module CPAN::Releases::Latest
       one for getting the info from MetaCPAN, and the other for building
       the cached index.
     - Added a live test, t/03-live-test.t
+    - Added description of max_age parameter to new()
 
 0.01 2014-04-12
     - First release to CPAN
