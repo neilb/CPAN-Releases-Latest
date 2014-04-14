@@ -198,6 +198,14 @@ using any of the expressions supported by L<Time::Duration::Parse>:
 If no units are given, it will be interpreted as a number of seconds.
 The default for max age is 1 day.
 
+=head1 SEE ALSO
+
+L<CPAN::ReleaseHistory> provides a similar iterator, but for all releases
+ever made to CPAN, even those that are no longer on CPAN.
+
+L<BackPAN::Index> is another way to get information about all releases
+ever made to CPAN.
+
 =head1 REPOSITORY
 
 L<https://github.com/neilbowers/CPAN-Releases-Latest>
