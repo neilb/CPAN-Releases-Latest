@@ -20,7 +20,7 @@ sub next_release
     my $fh;
 
     if (not defined($fh = $self->_fh)) {
-        open($fh, '<', $self->latest->path // $self->latest->cache_path);
+        open($fh, '<', $self->latest->path || $self->latest->cache_path);
         my $header = <$fh>;
         $self->_fh($fh);
     }

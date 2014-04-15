@@ -1,5 +1,9 @@
 Revision history for Perl module CPAN::Releases::Latest
 
+0.03 2014-04-15
+    - I was using '//' but only requiring perl 5.006. Switched it to '||',
+      as I could safely use it in that situation. Thanks again CPAN Testers.
+
 0.02 2014-04-14
     - Split _build_cached_index() into two separate private methods,
       one for getting the info from MetaCPAN, and the other for building
