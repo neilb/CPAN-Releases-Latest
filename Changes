@@ -4,6 +4,7 @@ Revision history for Perl module CPAN::Releases::Latest
     - MetaCPAN::Client 1.001001 had a fix which means we can now use its
       iterator interface, instead of using the Elasticsearch scroller.
       Thanks to Mickey.
+    - Added more documentation.
 
 0.03 2014-04-15
     - I was using '//' but only requiring perl 5.006. Switched it to '||',

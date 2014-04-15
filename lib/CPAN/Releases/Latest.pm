@@ -180,12 +180,13 @@ CPAN::Releases::Latest - find latest release(s) of all dists on CPAN, including 
 VERY MUCH AN ALPHA. ALL THINGS MAY CHANGE.
 
 This module uses the MetaCPAN API to construct a list of all dists on CPAN.
+The generated index is cached locally.
 It will let you iterate across these, returning the latest release of the dist.
 If the latest release is a developer release, then you'll first get back the
 non-developer release (if there is one), and then you'll get back the developer release.
 
 When you instantiate this class, you can specify the C<max_age> of
-the generated index, which is cached locally. You can specify the age
+the generated index. You can specify the age
 using any of the expressions supported by L<Time::Duration::Parse>:
 
  5 minutes
@@ -195,6 +196,10 @@ using any of the expressions supported by L<Time::Duration::Parse>:
 
 If no units are given, it will be interpreted as a number of seconds.
 The default for max age is 1 day.
+
+If you already have a cached copy of the index, and it is less than
+the specified age, then we'll use your cached copy and not even
+check with MetaCPAN.
 
 =head1 SEE ALSO
 
