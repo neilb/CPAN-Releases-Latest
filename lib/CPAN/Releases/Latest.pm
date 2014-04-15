@@ -4,7 +4,7 @@ use 5.006;
 use Moo;
 use File::HomeDir;
 use File::Spec::Functions 'catfile';
-use MetaCPAN::Client 1.001000;
+use MetaCPAN::Client 1.001001;
 use CPAN::DistnameInfo;
 use Carp;
 use autodie;
@@ -80,29 +80,27 @@ sub _get_release_info_from_metacpan
                          fields => [qw(name version date status maturity stat download_url)]
                      };
     my $result_set = $client->release($query, $params);
-    my $scroller   = $result_set->scroller;
     my $distdata   = {
                          released  => {},
                          developer => {},
                      };
 
-    while (my $result = $scroller->next) {
-        my $release  = $result->{fields};
-        my $maturity = $release->{maturity};
+    while (my $release = $result_set->next) {
+        my $maturity = $release->maturity;
         my $slice    = $distdata->{$maturity};
-        my $path     = $release->{download_url};
+        my $path     = $release->download_url;
            $path     =~ s!^.*/authors/id/!!;
         my $distinfo = CPAN::DistnameInfo->new($path);
         my $distname = defined($distinfo) && defined($distinfo->dist)
                        ? $distinfo->dist
-                       : $release->{metadata}->{name};
+                       : $release->name;
 
         next unless !exists($slice->{ $distname })
-                 || $release->{stat}->{mtime} > $slice->{$distname}->{time};
+                 || $release->stat->{mtime} > $slice->{$distname}->{time};
         $slice->{ $distname } = {
                                     path => $path,
-                                    time => $release->{stat}->{mtime},
-                                    size => $release->{stat}->{size},
+                                    time => $release->stat->{mtime},
+                                    size => $release->stat->{size},
                                 };
     }
 
