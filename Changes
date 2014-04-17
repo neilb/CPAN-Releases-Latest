@@ -1,5 +1,9 @@
 Revision history for Perl module CPAN::Releases::Latest
 
+0.05 2014-04-18
+    - Moved t/03-live-test.t into xt/release - it was taking a long time to
+      run for some people. Now I'll just run that test when releasing.
+
 0.04 2014-04-16
     - MetaCPAN::Client 1.001001 had a fix which means we can now use its
       iterator interface, instead of using the Elasticsearch scroller.
