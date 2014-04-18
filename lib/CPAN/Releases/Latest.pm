@@ -157,6 +157,7 @@ sub release_iterator
 sub _open_file
 {
     my $self       = shift;
+    my $options    = @_ > 0 ? shift : {};
     my $filename   = $self->cache_path;
     my $whatfile   = 'cached';
     my $from_cache = 1;
@@ -179,6 +180,24 @@ sub _open_file
         croak "the $whatfile file has a later format revision ($file_revision) ",
               "than this version of ", __PACKAGE__,
               " supports ($FORMAT_REVISION). Maybe it's time to upgrade?\n";
+    }
+
+    if ($file_revision < $FORMAT_REVISION) {
+        if ($whatfile eq 'passed') {
+            croak "the passed file $filename is from an older version of ",
+                  __PACKAGE__, "\n";
+        }
+
+        # The locally cached version was written by an older version of
+        # this module, but is still within the max_age constraint, which
+        # is how we ended up here. We rebuild the cached index and call
+        # this method again. But if we're here because we were trying to
+        # rebuild the index, then bomb out, because This Should Never Happen[TM].
+        if ($options->{rebuilding}) {
+            croak "failed to rebuild the cached index with the expected version\n";
+        }
+        $self->_build_cached_index();
+        return $self->_open_file({ rebuilding => 1});
     }
 
     return $fh;
