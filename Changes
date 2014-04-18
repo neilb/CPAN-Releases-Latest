@@ -3,9 +3,12 @@ Revision history for Perl module CPAN::Releases::Latest
 0.05 2014-04-18
     - Moved t/03-live-test.t into xt/release - it was taking a long time to
       run for some people. Now I'll just run that test when releasing.
+      Thanks to KENTNL for RT#94829.
     - Croak if we're presented with a data file which has a later format
       revision than the running version of the module supports.
     - Croak if we're passed a file to use, and it's in an earlier format.
+    - Added a release test for the scenario where the cached file is in
+      a previous format version, but within max_age. Make sure we rebuild cache.
 
 0.04 2014-04-16
     - MetaCPAN::Client 1.001001 had a fix which means we can now use its
