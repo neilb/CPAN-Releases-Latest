@@ -1,7 +1,7 @@
 #!perl
 
 #
-# 03-live-test.t
+# 05-live-test.t
 #
 # Iterate across all releases and look for the three dists that
 # were last released by AMOSS in 1995. Check that we get the expected

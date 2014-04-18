@@ -1,6 +1,6 @@
 #!perl
 #
-# xt/release/02-rebuild-cache.t
+# xt/release/06-rebuild-cache.t
 #
 # This tests the case where
 #   1. You've got an existing cache
@@ -16,7 +16,7 @@ use Test::More 0.88 tests => 4;
 use CPAN::Releases::Latest;
 use File::Copy qw/ copy /;
 
-my $CACHE_PATH = 'xt/release/02-cache-file.txt';
+my $CACHE_PATH = 't/06-cache-file.txt';
 my $latest;
 my $iterator;
 my $release;
