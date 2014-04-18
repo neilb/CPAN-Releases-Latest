@@ -154,6 +154,36 @@ sub release_iterator
     return CPAN::Releases::Latest::ReleaseIterator->new( latest => $self, @_ );
 }
 
+sub _open_file
+{
+    my $self       = shift;
+    my $filename   = $self->cache_path;
+    my $whatfile   = 'cached';
+    my $from_cache = 1;
+    my $fh;
+
+    if (defined($self->path)) {
+        $filename   = $self->path;
+        $from_cache = 0;
+        $whatfile   = 'passed';
+    }
+
+    open($fh, '<', $filename);
+    my $line = <$fh>;
+    if ($line !~ m!^#FORMAT: (\d+)$!) {
+        croak "unexpected format of first line - should give format";
+    }
+    my $file_revision = $1;
+
+    if ($file_revision > $FORMAT_REVISION) {
+        croak "the $whatfile file has a later format revision ($file_revision) ",
+              "than this version of ", __PACKAGE__,
+              " supports ($FORMAT_REVISION). Maybe it's time to upgrade?\n";
+    }
+
+    return $fh;
+}
+
 1;
 
 =head1 NAME
