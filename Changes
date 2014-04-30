@@ -1,5 +1,11 @@
 Revision history for Perl module CPAN::Releases::Latest
 
+0.05_01 2014-04-30
+    - Changed to model where the data for the index is retrieved by a plugin,
+      and moved the MetaCPAN-specific code to be the default plugin.
+      Suggested by BARBIE in RT#95196. This is a bit of quick hack,
+      which is why it's a developer release :-)
+
 0.05 2014-04-18
     - Moved t/03-live-test.t into xt/release - it was taking a long time to
       run for some people. Now I'll just run that test when releasing.

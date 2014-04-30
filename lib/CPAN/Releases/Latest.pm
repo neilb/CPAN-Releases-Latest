@@ -5,16 +5,20 @@ use Moo;
 use File::HomeDir;
 use File::Spec::Functions 'catfile';
 use MetaCPAN::Client 1.001001;
+use Module::Runtime qw/ is_module_name require_module /;
 use CPAN::DistnameInfo;
 use Carp;
 use autodie;
 
 my $FORMAT_REVISION = 1;
 
-has 'max_age'    => (is => 'ro', default => sub { '1 day' });
-has 'cache_path' => (is => 'rw');
-has 'basename'   => (is => 'ro', default => sub { 'latest-releases.txt' });
-has 'path'       => (is => 'ro');
+has 'max_age'           => (is => 'ro', default => sub { '1 day' });
+has 'cache_path'        => (is => 'rw');
+has 'basename'          => (is => 'ro', default => sub { 'latest-releases.txt' });
+has 'path'              => (is => 'ro');
+has 'source'            => (is => 'ro', default => sub { 'MetaCPAN' });
+
+has '_indexer'          => (is => 'lazy');
 
 sub BUILD
 {
@@ -54,57 +58,25 @@ sub BUILD
 sub _build_cached_index
 {
     my $self     = shift;
-    my $distdata = $self->_get_release_info_from_metacpan();
+    my $indexer  = $self->_indexer;
+    my $distdata = $indexer->get_release_info();
 
     $self->_write_cache_file($distdata);
 }
 
-sub _get_release_info_from_metacpan
+sub _build__indexer
 {
-    my $self       = shift;
-    my $client     = MetaCPAN::Client->new();
-    my $query      = {
-                        either => [
-                                      { all => [
-                                          { status   => 'latest'    },
-                                          { maturity => 'released'  },
-                                      ]},
+    my $self             = shift;
+    my $base_module_name = $self->source;
 
-                                      { all => [
-                                          { status   => 'cpan'      },
-                                          { maturity => 'developer' },
-                                      ]},
-                                   ]
-                     };
-    my $params     = {
-                         fields => [qw(name version date status maturity stat download_url)]
-                     };
-    my $result_set = $client->release($query, $params);
-    my $distdata   = {
-                         released  => {},
-                         developer => {},
-                     };
-
-    while (my $release = $result_set->next) {
-        my $maturity = $release->maturity;
-        my $slice    = $distdata->{$maturity};
-        my $path     = $release->download_url;
-           $path     =~ s!^.*/authors/id/!!;
-        my $distinfo = CPAN::DistnameInfo->new($path);
-        my $distname = defined($distinfo) && defined($distinfo->dist)
-                       ? $distinfo->dist
-                       : $release->name;
-
-        next unless !exists($slice->{ $distname })
-                 || $release->stat->{mtime} > $slice->{$distname}->{time};
-        $slice->{ $distname } = {
-                                    path => $path,
-                                    time => $release->stat->{mtime},
-                                    size => $release->stat->{size},
-                                };
+    if (not is_module_name($base_module_name)) {
+        croak "source '$base_module_name' is not a valid module name";
     }
 
-    return $distdata;
+    my $full_class_name  = "CPAN::Releases::Latest::Source::$base_module_name";
+    require_module($full_class_name);
+
+    return $full_class_name->new();
 }
 
 sub _write_cache_file
@@ -228,7 +200,7 @@ CPAN::Releases::Latest - find latest release(s) of all dists on CPAN, including 
 
 VERY MUCH AN ALPHA. ALL THINGS MAY CHANGE.
 
-This module uses the MetaCPAN API to construct a list of all dists on CPAN.
+This module constructs a list of all dists on CPAN, by default using the MetaCPAN API.
 The generated index is cached locally.
 It will let you iterate across these, returning the latest release of the dist.
 If the latest release is a developer release, then you'll first get back the
@@ -249,6 +221,46 @@ The default for max age is 1 day.
 If you already have a cached copy of the index, and it is less than
 the specified age, then we'll use your cached copy and not even
 check with MetaCPAN.
+
+=head1 Data source
+
+By default the locally cached index is generated using information requested
+from MetaCPAN, using L<MetaCPAN::Client>. The plugin which does this is
+L<CPAN::Releases::Latest::Source::MetaCPAN>. You can explicitly specify
+the source when calling the constructor:
+
+ $latest = CPAN::Releases::Latest->new( source => 'MetaCPAN' );
+
+You can use a different source for the data, by providing your own plugin,
+which must live in the C<CPAN::Releases::Latest::Source> namespace.
+
+The plugin must return a hashref that has the following structure:
+
+ {
+   release => {
+
+     'Graph' => {
+        path => 'J/JH/JHI/Graph-0.96.tar.gz',
+        time => 1369483123,
+        size => 147629,
+     },
+
+   },
+
+   developer => {
+
+     'Graph' => {
+        path => 'N/NE/NEILB/Graph-0.96_01.tar.gz',
+        time => 1394362358,
+        size => 147335,
+     },
+
+   }
+
+ }
+
+At the moment this isn't enforced, but a future version will croak
+if the source doesn't return the right structure.
 
 =head1 SEE ALSO
 
