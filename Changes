@@ -1,5 +1,11 @@
 Revision history for Perl module CPAN::Releases::Latest
 
+0.06 2014-05-22
+    - The data for the index is now built by a plugin, with the default
+      plugin being for MetaDATA. Suggested by BARBIE.
+    - Added a distribution_iterator() method, which lets you iterate over
+      the index dist by dist. For each dist you get one or two releases.
+
 0.05_01 2014-04-30
     - Changed to model where the data for the index is retrieved by a plugin,
       and moved the MetaCPAN-specific code to be the default plugin.

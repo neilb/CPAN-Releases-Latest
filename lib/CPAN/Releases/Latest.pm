@@ -126,6 +126,17 @@ sub release_iterator
     return CPAN::Releases::Latest::ReleaseIterator->new( latest => $self, @_ );
 }
 
+sub distribution_iterator
+{
+    my $self = shift;
+
+    require CPAN::Releases::Latest::DistributionIterator;
+    return CPAN::Releases::Latest::DistributionIterator->new(
+                latest => $self,
+                @_
+           );
+}
+
 sub _open_file
 {
     my $self       = shift;
@@ -198,13 +209,14 @@ CPAN::Releases::Latest - find latest release(s) of all dists on CPAN, including 
 
 =head1 DESCRIPTION
 
-VERY MUCH AN ALPHA. ALL THINGS MAY CHANGE.
-
 This module constructs a list of all dists on CPAN, by default using the MetaCPAN API.
 The generated index is cached locally.
-It will let you iterate across these, returning the latest release of the dist.
-If the latest release is a developer release, then you'll first get back the
-non-developer release (if there is one), and then you'll get back the developer release.
+It will let you iterate over the index, either release by release,
+or distribution by distribution.
+
+See below for details of the two iterators you can instantiate.
+
+B<Note:> this is very much an alpha release; all things may change.
 
 When you instantiate this class, you can specify the C<max_age> of
 the generated index. You can specify the age
@@ -221,6 +233,67 @@ The default for max age is 1 day.
 If you already have a cached copy of the index, and it is less than
 the specified age, then we'll use your cached copy and not even
 check with MetaCPAN.
+
+=head2 distribution_iterator
+
+The C<distribution_iterator> method returns an iterator which
+will process the index dist by dist:
+
+ my $latest   = CPAN::Releases::Latest->new();
+ my $iterator = $latest->distribution_iterator();
+
+ while (my $dist = $iterator->next_distribution) {
+    print $dist->distname, "\n";
+    process_release($dist->release);
+    process_release($dist->developer_release);
+ }
+
+The iterator returns instances of L<CPAN::Releases::Latest::Distribution>,
+or C<undef> when the index has been exhausted.
+The distribution object has three attributes:
+
+=over 4
+
+=item * distname: the distribution name as determined by L<CPAN::DistnameInfo>
+
+=item * release: a release object for the latest non-developer release, or C<undef>
+
+=item * developer_release: a release object for the latest developer release that is more recent than the latest non-developer release, or C<undef>
+
+=back
+
+The release objects are instances of L<CPAN::Releases::Latest::Release>,
+which are described in the next section, below.
+
+=head2 release_iterator
+
+The C<release_iterator> method returns an iterator which will process the index
+release by release. See the example in the SYNOPSIS.
+
+You will see the releases ordered distribution by distribution.
+For a given distribution you'll first see the latest non-developer release,
+if there is one;
+if the most recent release for the distribution is a developer release,
+then you'll see that.
+So for any dist you'll see at most two releases, and the developer release
+will always come second.
+
+The release objects are instances of L<CPAN::Releases::Latest::Release>,
+which have the following attributes:
+
+=over 4
+
+=item * distname: the distribution name as determined by L<CPAN::DistnameInfo>
+
+=item * path: the partial path for the release tarball (eg C<N/NE/NEILB/enum-1.05.tar.gz>)
+
+=item * timestamp: an epoch-based timestamp for when the tarball was uploaded to PAUSE.
+
+=item * size: the size of the release tarball, in bytes.
+
+=item * distinfo: an instance of L<CPAN::DistnameInfo>, which is constructed lazily.
+
+=back
 
 =head1 Data source
 
