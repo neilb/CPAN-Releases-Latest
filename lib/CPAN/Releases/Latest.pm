@@ -345,7 +345,7 @@ ever made to CPAN.
 
 =head1 REPOSITORY
 
-L<https://github.com/neilbowers/CPAN-Releases-Latest>
+L<https://github.com/neilb/CPAN-Releases-Latest>
 
 =head1 AUTHOR
 

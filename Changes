@@ -1,5 +1,8 @@
 Revision history for Perl module CPAN::Releases::Latest
 
+0.07 2015-11-06 NEILB
+    - Updated github repo URL after changing my github username
+
 0.06 2014-05-22
     - The data for the index is now built by a plugin, with the default
       plugin being for MetaDATA. Suggested by BARBIE.
