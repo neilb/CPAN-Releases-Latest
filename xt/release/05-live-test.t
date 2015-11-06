@@ -15,9 +15,14 @@ use Test::More tests => 2;
 use CPAN::Releases::Latest;
 
 my %expected = (
-    'SGI-FM'        => 'A/AM/AMOSS/SGI-FM-0.1.tar.gz 1995-08-20 07:29:54',
-    'SGI-GL'        => 'A/AM/AMOSS/SGI-GL-0.2.tar.gz 1995-08-20 07:30:34',
-    'SGI-SysCalls'  => 'A/AM/AMOSS/SGI-SysCalls-0.1.tar.gz 1995-08-20 07:31:05',
+    'Math-Rand48'
+        => 'N/NI/NI-S/Math-Rand48-1.00.tar.gz 1999-05-15 09:46:36',
+
+    'Tie-MmapArray'
+        => 'A/AN/ANDREWF/Tie-MmapArray-0.04.tar.gz 2000-11-03 07:36:08',
+
+    'Data-Iterator-Hierarchical'
+        => 'N/NO/NOBULL/Data-Iterator-Hierarchical-0.07.zip 2008-11-02 14:07:07',
 );
 my %got;
 
