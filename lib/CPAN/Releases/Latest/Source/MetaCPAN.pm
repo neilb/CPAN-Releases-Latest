@@ -2,7 +2,7 @@ package CPAN::Releases::Latest::Source::MetaCPAN;
 
 use 5.006;
 use Moo;
-use MetaCPAN::Client 1.001001;
+use MetaCPAN::Client 2.006000;
 use CPAN::DistnameInfo;
 use Carp;
 
@@ -29,7 +29,7 @@ sub get_release_info
                                    ]
                      };
     my $params     = {
-                         fields => [qw(name version date status maturity stat download_url)]
+                         _source => [qw(name version date status maturity stat download_url)]
                      };
     my $result_set = $client->release($query, $params);
     my $distdata   = {
