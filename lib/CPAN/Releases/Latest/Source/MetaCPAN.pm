@@ -41,6 +41,7 @@ sub get_release_info
         my $maturity = $release->maturity;
         my $slice    = $distdata->{$maturity};
         my $path     = $release->download_url;
+        next unless defined $path;
            $path     =~ s!^.*/authors/id/!!;
         my $distinfo = CPAN::DistnameInfo->new($path);
         my $distname = defined($distinfo) && defined($distinfo->dist)

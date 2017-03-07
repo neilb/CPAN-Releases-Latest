@@ -4,6 +4,9 @@ Revision history for Perl module CPAN::Releases::Latest
     - Changed the MetaCPAN source to use _source filtering rather
       than fields, as a recent change to MetaCPAN::Client stopped the
       old code from working. gh#1 reported by Paul Johnson.
+    - Skip releases that don't have a download_url specified.
+      This shouldn't really happen, but we're currently getting a few
+      of these. Have reported as a bug in MetaCPAN API.
 
 0.07 2015-11-06 NEILB
     - Updated github repo URL after changing my github username
